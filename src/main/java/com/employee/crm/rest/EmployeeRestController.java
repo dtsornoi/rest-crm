@@ -20,11 +20,6 @@ public class EmployeeRestController {
         this.employeeService = employeeService;
     }
 
-//    @GetMapping("/login")
-//    public Principal user(Principal user) {
-//        return user;
-//    }
-
     @GetMapping("/employees")
     public List<Employee> listAllEmployees(){
         return employeeService.listAll();
