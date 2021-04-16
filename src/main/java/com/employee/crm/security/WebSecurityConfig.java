@@ -20,14 +20,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthenticationEntryPoint entryPoint;
 
     @Autowired
-    public WebSecurityConfig(CustomUserDetailsService customUserDetailsService, AuthenticationEntryPoint entryPoint){
+    public WebSecurityConfig(CustomUserDetailsService customUserDetailsService,
+                             AuthenticationEntryPoint entryPoint){
         this.customUserDetailsService = customUserDetailsService;
         this.entryPoint = entryPoint;
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(customUserDetailsService).passwordEncoder(new BCryptPasswordEncoder());
+        auth.userDetailsService(customUserDetailsService)
+                .passwordEncoder(new BCryptPasswordEncoder());
     }
 
     @Override
