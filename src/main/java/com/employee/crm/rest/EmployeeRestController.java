@@ -3,6 +3,8 @@ package com.employee.crm.rest;
 import com.employee.crm.entity.Employee;
 import com.employee.crm.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,41 +22,53 @@ public class EmployeeRestController {
     }
 
     @GetMapping("/employees")
-    public List<Employee> listAllEmployees(){
-        return employeeService.listAll();
+    public ResponseEntity<List<Employee>>  listAllEmployees(){
+        List<Employee> response = employeeService.listAll();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/employees/{id}")
-    public Employee findEmployee(@PathVariable("id") int id){
+    public ResponseEntity<Employee> findEmployee(@PathVariable("id") int id){
         Employee employee = employeeService.findEmployeeById(id);
 
         if (employee == null){
-            throw new RuntimeException("No such employee");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        return employee;
+        return new ResponseEntity<>(employee, HttpStatus.OK);
     }
 
     @PostMapping("/employees")
-    public void saveEmployee(@RequestBody Employee employee){
+    public ResponseEntity<Employee> saveEmployee(@RequestBody Employee employee){
         employee.setId(0);
-        employeeService.saveOrUpdateEmployee(employee);
+        Employee response = employeeService.saveOrUpdateEmployee(employee);
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("/employees")
-    public void updateEmployee(@RequestBody Employee employee){
+    public ResponseEntity<HttpStatus> updateEmployee(@RequestBody Employee employee){
+       Employee checkIfExists = employeeService.findEmployeeById(employee.getId());
+
+       if (checkIfExists == null){
+           return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+       }
+       
         employeeService.saveOrUpdateEmployee(employee);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/employees/{id}")
-    public void deleteEmployee(@PathVariable("id") int id){
+    public ResponseEntity<HttpStatus> deleteEmployee(@PathVariable("id") int id){
         Employee employee = employeeService.findEmployeeById(id);
 
         if (employee == null){
-            throw new RuntimeException("Employee not found");
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         employeeService.deleteEmployee(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
